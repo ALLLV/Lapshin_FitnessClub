@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Lapshin_FitnessClub.ClassHelper;
+using Lapshin_FitnessClub.DB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,11 +46,17 @@ namespace Lapshin_FitnessClub.Pages
 
         private void BtnContinue_Click(object sender, RoutedEventArgs e)
         {
+            ConnectionClass cc = new ConnectionClass();
+            cc.newUser = new User();
+
             if (TbxEmail.Text.Contains('@') && TbxEmail.Text.Contains('.')
-                && TbxLogin.Text != ""
-                && TbxPassword.Password != ""
+                && !String.IsNullOrWhiteSpace(TbxLogin.Text)
+                && !String.IsNullOrWhiteSpace(TbxPassword.Password)
                 && TbxPasswordConfirm.Password == TbxPassword.Password)
             {
+                cc.newUser.login = TbxLogin.Text;
+                cc.newUser.password = TbxPassword.Password;
+                cc.newUser.email = TbxEmail.Text;
                 NavigationService.Navigate(ClassHelper.PageMaster.registrationContinue);
             }
         }

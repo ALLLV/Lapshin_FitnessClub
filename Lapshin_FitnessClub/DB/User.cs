@@ -27,11 +27,12 @@ namespace Lapshin_FitnessClub.DB
         public string login { get; set; }
         public string password { get; set; }
         public string firstName { get; set; }
-        public string lastNAme { get; set; }
+        public string lastName { get; set; }
         public string patronymic { get; set; }
         public System.DateTime birthday { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
+        public string genderCode { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientService> ClientService { get; set; }
@@ -39,6 +40,7 @@ namespace Lapshin_FitnessClub.DB
         public virtual ICollection<ClientSubscription> ClientSubscription { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EditHistory> EditHistory { get; set; }
+        public virtual Gender Gender { get; set; }
         public virtual Role Role { get; set; }
     }
 }

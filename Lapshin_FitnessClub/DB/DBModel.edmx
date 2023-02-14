@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Хранилище Lapshin_3IPS919VB_FitnessClubModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Хранилище Lapshin_3IPS919VB_FitnessClubModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ClientService">
           <Key>
             <PropertyRef Name="idClient" />
@@ -35,6 +35,13 @@
           <Property Name="idEditSource" Type="int" />
           <Property Name="nameEditSource" Type="nvarchar" MaxLength="200" />
           <Property Name="editSourceStatus" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Gender">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="nchar" MaxLength="1" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="14" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -83,11 +90,12 @@
           <Property Name="login" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="password" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="firstName" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="lastNAme" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="lastName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="patronymic" Type="nvarchar" MaxLength="100" />
           <Property Name="birthday" Type="datetime" Nullable="false" />
           <Property Name="phone" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="email" Type="nvarchar" MaxLength="100" />
+          <Property Name="genderCode" Type="nchar" MaxLength="1" />
         </EntityType>
         <Association Name="FK_ClientService_Client">
           <End Role="User" Type="Self.User" Multiplicity="1" />
@@ -146,6 +154,18 @@
             </Principal>
             <Dependent Role="EditHistory">
               <PropertyRef Name="idEditor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Gender">
+          <End Role="Gender" Type="Self.Gender" Multiplicity="0..1" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gender">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="genderCode" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -196,6 +216,7 @@
           <EntitySet Name="ClientService" EntityType="Self.ClientService" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ClientSubscription" EntityType="Self.ClientSubscription" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EditHistory" EntityType="Self.EditHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Gender" EntityType="Self.Gender" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Service" EntityType="Self.Service" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscription" EntityType="Self.Subscription" Schema="dbo" store:Type="Tables" />
@@ -221,217 +242,20 @@
             <End Role="User" EntitySet="User" />
             <End Role="EditHistory" EntitySet="EditHistory" />
           </AssociationSet>
+          <AssociationSet Name="FK_User_Gender" Association="Self.FK_User_Gender">
+            <End Role="Gender" EntitySet="Gender" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
           <AssociationSet Name="FK_User_Role" Association="Self.FK_User_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Lapshin_3IPS919VB_FitnessClubModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="ClientService">
-          <Key>
-            <PropertyRef Name="idClient" />
-            <PropertyRef Name="idService" />
-          </Key>
-          <Property Name="idClient" Type="Int32" Nullable="false" />
-          <Property Name="idService" Type="Int32" Nullable="false" />
-          <Property Name="startTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="isProvided" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK_ClientService_Client" FromRole="ClientService" ToRole="User" />
-          <NavigationProperty Name="Service" Relationship="Self.FK_ClientService_Service" FromRole="ClientService" ToRole="Service" />
-        </EntityType>
-        <EntityType Name="ClientSubscription">
-          <Key>
-            <PropertyRef Name="idClient" />
-            <PropertyRef Name="idService" />
-          </Key>
-          <Property Name="idClient" Type="Int32" Nullable="false" />
-          <Property Name="idService" Type="Int32" Nullable="false" />
-          <Property Name="purchaseTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="User" Relationship="Self.FK_ClientSubscription_Client" FromRole="ClientSubscription" ToRole="User" />
-          <NavigationProperty Name="Subscription" Relationship="Self.FK_ClientSubscription_Subscription" FromRole="ClientSubscription" ToRole="Subscription" />
-        </EntityType>
-        <EntityType Name="EditHistory">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="idEditor" Type="Int32" Nullable="false" />
-          <Property Name="timeEdit" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="editSourceTableName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="idEditSource" Type="Int32" />
-          <Property Name="nameEditSource" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="editSourceStatus" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="User" Relationship="Self.FK_EditHistory_Editor" FromRole="EditHistory" ToRole="User" />
-        </EntityType>
-        <EntityType Name="Role">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK_User_Role" FromRole="Role" ToRole="User" />
-        </EntityType>
-        <EntityType Name="Service">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="duration" Type="Int32" Nullable="false" />
-          <Property Name="cost" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="isActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="ClientService" Relationship="Self.FK_ClientService_Service" FromRole="Service" ToRole="ClientService" />
-        </EntityType>
-        <EntityType Name="Subscription">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="idService" Type="Int32" Nullable="false" />
-          <Property Name="cost" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="duration" Type="Int32" Nullable="false" />
-          <Property Name="numberOfLessons" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="ClientSubscription" Relationship="Self.FK_ClientSubscription_Subscription" FromRole="Subscription" ToRole="ClientSubscription" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
-        <EntityType Name="User">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="idRole" Type="Int32" Nullable="false" />
-          <Property Name="login" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="firstName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="lastNAme" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="patronymic" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="birthday" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="ClientService" Relationship="Self.FK_ClientService_Client" FromRole="User" ToRole="ClientService" />
-          <NavigationProperty Name="ClientSubscription" Relationship="Self.FK_ClientSubscription_Client" FromRole="User" ToRole="ClientSubscription" />
-          <NavigationProperty Name="EditHistory" Relationship="Self.FK_EditHistory_Editor" FromRole="User" ToRole="EditHistory" />
-          <NavigationProperty Name="Role" Relationship="Self.FK_User_Role" FromRole="User" ToRole="Role" />
-        </EntityType>
-        <Association Name="FK_ClientService_Client">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="ClientService" Type="Self.ClientService" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ClientService">
-              <PropertyRef Name="idClient" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ClientService_Service">
-          <End Role="Service" Type="Self.Service" Multiplicity="1" />
-          <End Role="ClientService" Type="Self.ClientService" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Service">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ClientService">
-              <PropertyRef Name="idService" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ClientSubscription_Client">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="ClientSubscription" Type="Self.ClientSubscription" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ClientSubscription">
-              <PropertyRef Name="idClient" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ClientSubscription_Subscription">
-          <End Role="Subscription" Type="Self.Subscription" Multiplicity="1" />
-          <End Role="ClientSubscription" Type="Self.ClientSubscription" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subscription">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ClientSubscription">
-              <PropertyRef Name="idClient" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_EditHistory_Editor">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="EditHistory" Type="Self.EditHistory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="EditHistory">
-              <PropertyRef Name="idEditor" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_User_Role">
-          <End Role="Role" Type="Self.Role" Multiplicity="1" />
-          <End Role="User" Type="Self.User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Role">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="idRole" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="ClientService" EntityType="Self.ClientService" />
-          <EntitySet Name="ClientSubscription" EntityType="Self.ClientSubscription" />
-          <EntitySet Name="EditHistory" EntityType="Self.EditHistory" />
-          <EntitySet Name="Role" EntityType="Self.Role" />
-          <EntitySet Name="Service" EntityType="Self.Service" />
-          <EntitySet Name="Subscription" EntityType="Self.Subscription" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
-          <EntitySet Name="User" EntityType="Self.User" />
-          <AssociationSet Name="FK_ClientService_Client" Association="Self.FK_ClientService_Client">
-            <End Role="User" EntitySet="User" />
-            <End Role="ClientService" EntitySet="ClientService" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ClientService_Service" Association="Self.FK_ClientService_Service">
-            <End Role="Service" EntitySet="Service" />
-            <End Role="ClientService" EntitySet="ClientService" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ClientSubscription_Client" Association="Self.FK_ClientSubscription_Client">
-            <End Role="User" EntitySet="User" />
-            <End Role="ClientSubscription" EntitySet="ClientSubscription" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ClientSubscription_Subscription" Association="Self.FK_ClientSubscription_Subscription">
-            <End Role="Subscription" EntitySet="Subscription" />
-            <End Role="ClientSubscription" EntitySet="ClientSubscription" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EditHistory_Editor" Association="Self.FK_EditHistory_Editor">
-            <End Role="User" EntitySet="User" />
-            <End Role="EditHistory" EntitySet="EditHistory" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_Role" Association="Self.FK_User_Role">
-            <End Role="Role" EntitySet="Role" />
-            <End Role="User" EntitySet="User" />
-          </AssociationSet>
           <FunctionImport Name="sp_alterdiagram">
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
@@ -462,6 +286,43 @@
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
+          <EntitySet Name="ClientService" EntityType="Lapshin_3IPS919VB_FitnessClubModel.ClientService" />
+          <EntitySet Name="ClientSubscription" EntityType="Lapshin_3IPS919VB_FitnessClubModel.ClientSubscription" />
+          <EntitySet Name="EditHistory" EntityType="Lapshin_3IPS919VB_FitnessClubModel.EditHistory" />
+          <EntitySet Name="Gender" EntityType="Lapshin_3IPS919VB_FitnessClubModel.Gender" />
+          <EntitySet Name="Role" EntityType="Lapshin_3IPS919VB_FitnessClubModel.Role" />
+          <EntitySet Name="Service" EntityType="Lapshin_3IPS919VB_FitnessClubModel.Service" />
+          <EntitySet Name="Subscription" EntityType="Lapshin_3IPS919VB_FitnessClubModel.Subscription" />
+          <EntitySet Name="sysdiagrams" EntityType="Lapshin_3IPS919VB_FitnessClubModel.sysdiagrams" />
+          <EntitySet Name="User" EntityType="Lapshin_3IPS919VB_FitnessClubModel.User" />
+          <AssociationSet Name="FK_ClientService_Client" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientService_Client">
+            <End Role="User" EntitySet="User" />
+            <End Role="ClientService" EntitySet="ClientService" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClientService_Service" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientService_Service">
+            <End Role="Service" EntitySet="Service" />
+            <End Role="ClientService" EntitySet="ClientService" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClientSubscription_Client" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientSubscription_Client">
+            <End Role="User" EntitySet="User" />
+            <End Role="ClientSubscription" EntitySet="ClientSubscription" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClientSubscription_Subscription" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientSubscription_Subscription">
+            <End Role="Subscription" EntitySet="Subscription" />
+            <End Role="ClientSubscription" EntitySet="ClientSubscription" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EditHistory_Editor" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_EditHistory_Editor">
+            <End Role="User" EntitySet="User" />
+            <End Role="EditHistory" EntitySet="EditHistory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Gender" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_User_Gender">
+            <End Role="Gender" EntitySet="Gender" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Role" Association="Lapshin_3IPS919VB_FitnessClubModel.FK_User_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -474,102 +335,202 @@
           <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
           <Property Type="Int32" Name="OwnerID" Nullable="false" />
         </ComplexType>
+        <EntityType Name="ClientService">
+          <Key>
+            <PropertyRef Name="idClient" />
+            <PropertyRef Name="idService" />
+          </Key>
+          <Property Name="idClient" Type="Int32" Nullable="false" />
+          <Property Name="idService" Type="Int32" Nullable="false" />
+          <Property Name="startTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isProvided" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientService_Client" FromRole="ClientService" ToRole="User" />
+          <NavigationProperty Name="Service" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientService_Service" FromRole="ClientService" ToRole="Service" />
+        </EntityType>
+        <EntityType Name="ClientSubscription">
+          <Key>
+            <PropertyRef Name="idClient" />
+            <PropertyRef Name="idService" />
+          </Key>
+          <Property Name="idClient" Type="Int32" Nullable="false" />
+          <Property Name="idService" Type="Int32" Nullable="false" />
+          <Property Name="purchaseTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="User" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientSubscription_Client" FromRole="ClientSubscription" ToRole="User" />
+          <NavigationProperty Name="Subscription" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientSubscription_Subscription" FromRole="ClientSubscription" ToRole="Subscription" />
+        </EntityType>
+        <EntityType Name="EditHistory">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idEditor" Type="Int32" Nullable="false" />
+          <Property Name="timeEdit" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="editSourceTableName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="idEditSource" Type="Int32" />
+          <Property Name="nameEditSource" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="editSourceStatus" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_EditHistory_Editor" FromRole="EditHistory" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Gender">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="14" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_User_Gender" FromRole="Gender" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_User_Role" FromRole="Role" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="duration" Type="Int32" Nullable="false" />
+          <Property Name="cost" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="ClientService" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientService_Service" FromRole="Service" ToRole="ClientService" />
+        </EntityType>
+        <EntityType Name="Subscription">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="idService" Type="Int32" Nullable="false" />
+          <Property Name="cost" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
+          <Property Name="duration" Type="Int32" Nullable="false" />
+          <Property Name="numberOfLessons" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ClientSubscription" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientSubscription_Subscription" FromRole="Subscription" ToRole="ClientSubscription" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idRole" Type="Int32" Nullable="false" />
+          <Property Name="login" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="firstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="lastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="patronymic" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="birthday" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="phone" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="genderCode" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="ClientService" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientService_Client" FromRole="User" ToRole="ClientService" />
+          <NavigationProperty Name="ClientSubscription" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_ClientSubscription_Client" FromRole="User" ToRole="ClientSubscription" />
+          <NavigationProperty Name="EditHistory" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_EditHistory_Editor" FromRole="User" ToRole="EditHistory" />
+          <NavigationProperty Name="Gender" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_User_Gender" FromRole="User" ToRole="Gender" />
+          <NavigationProperty Name="Role" Relationship="Lapshin_3IPS919VB_FitnessClubModel.FK_User_Role" FromRole="User" ToRole="Role" />
+        </EntityType>
+        <Association Name="FK_ClientService_Client">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.User" Role="User" Multiplicity="1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.ClientService" Role="ClientService" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ClientService">
+              <PropertyRef Name="idClient" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClientService_Service">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.Service" Role="Service" Multiplicity="1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.ClientService" Role="ClientService" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ClientService">
+              <PropertyRef Name="idService" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClientSubscription_Client">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.User" Role="User" Multiplicity="1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.ClientSubscription" Role="ClientSubscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ClientSubscription">
+              <PropertyRef Name="idClient" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClientSubscription_Subscription">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.Subscription" Role="Subscription" Multiplicity="1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.ClientSubscription" Role="ClientSubscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subscription">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ClientSubscription">
+              <PropertyRef Name="idClient" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EditHistory_Editor">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.User" Role="User" Multiplicity="1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.EditHistory" Role="EditHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="EditHistory">
+              <PropertyRef Name="idEditor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Gender">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.Gender" Role="Gender" Multiplicity="0..1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gender">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="genderCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Role">
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.Role" Role="Role" Multiplicity="1" />
+          <End Type="Lapshin_3IPS919VB_FitnessClubModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="idRole" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Хранилище Lapshin_3IPS919VB_FitnessClubModelContainer" CdmEntityContainer="Entities">
-          <EntitySetMapping Name="ClientService">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.ClientService">
-              <MappingFragment StoreEntitySet="ClientService">
-                <ScalarProperty Name="idClient" ColumnName="idClient" />
-                <ScalarProperty Name="idService" ColumnName="idService" />
-                <ScalarProperty Name="startTime" ColumnName="startTime" />
-                <ScalarProperty Name="isProvided" ColumnName="isProvided" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ClientSubscription">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.ClientSubscription">
-              <MappingFragment StoreEntitySet="ClientSubscription">
-                <ScalarProperty Name="idClient" ColumnName="idClient" />
-                <ScalarProperty Name="idService" ColumnName="idService" />
-                <ScalarProperty Name="purchaseTime" ColumnName="purchaseTime" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EditHistory">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.EditHistory">
-              <MappingFragment StoreEntitySet="EditHistory">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="idEditor" ColumnName="idEditor" />
-                <ScalarProperty Name="timeEdit" ColumnName="timeEdit" />
-                <ScalarProperty Name="editSourceTableName" ColumnName="editSourceTableName" />
-                <ScalarProperty Name="idEditSource" ColumnName="idEditSource" />
-                <ScalarProperty Name="nameEditSource" ColumnName="nameEditSource" />
-                <ScalarProperty Name="editSourceStatus" ColumnName="editSourceStatus" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Role">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Role">
-              <MappingFragment StoreEntitySet="Role">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Service">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Service">
-              <MappingFragment StoreEntitySet="Service">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="cost" ColumnName="cost" />
-                <ScalarProperty Name="isActive" ColumnName="isActive" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Subscription">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Subscription">
-              <MappingFragment StoreEntitySet="Subscription">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="idService" ColumnName="idService" />
-                <ScalarProperty Name="cost" ColumnName="cost" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="numberOfLessons" ColumnName="numberOfLessons" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.sysdiagrams">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="User">
-            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.User">
-              <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="idRole" ColumnName="idRole" />
-                <ScalarProperty Name="login" ColumnName="login" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="firstName" ColumnName="firstName" />
-                <ScalarProperty Name="lastNAme" ColumnName="lastNAme" />
-                <ScalarProperty Name="patronymic" ColumnName="patronymic" />
-                <ScalarProperty Name="birthday" ColumnName="birthday" />
-                <ScalarProperty Name="phone" ColumnName="phone" />
-                <ScalarProperty Name="email" ColumnName="email" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="Хранилище Lapshin_3IPS919VB_FitnessClubModel.sp_alterdiagram" />
           <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="Хранилище Lapshin_3IPS919VB_FitnessClubModel.sp_creatediagram" />
           <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="Хранилище Lapshin_3IPS919VB_FitnessClubModel.sp_dropdiagram" />
@@ -594,6 +555,105 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="Хранилище Lapshin_3IPS919VB_FitnessClubModel.sp_renamediagram" />
           <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="Хранилище Lapshin_3IPS919VB_FitnessClubModel.sp_upgraddiagrams" />
+          <EntitySetMapping Name="ClientService">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.ClientService">
+              <MappingFragment StoreEntitySet="ClientService">
+                <ScalarProperty Name="isProvided" ColumnName="isProvided" />
+                <ScalarProperty Name="startTime" ColumnName="startTime" />
+                <ScalarProperty Name="idService" ColumnName="idService" />
+                <ScalarProperty Name="idClient" ColumnName="idClient" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClientSubscription">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.ClientSubscription">
+              <MappingFragment StoreEntitySet="ClientSubscription">
+                <ScalarProperty Name="purchaseTime" ColumnName="purchaseTime" />
+                <ScalarProperty Name="idService" ColumnName="idService" />
+                <ScalarProperty Name="idClient" ColumnName="idClient" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EditHistory">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.EditHistory">
+              <MappingFragment StoreEntitySet="EditHistory">
+                <ScalarProperty Name="editSourceStatus" ColumnName="editSourceStatus" />
+                <ScalarProperty Name="nameEditSource" ColumnName="nameEditSource" />
+                <ScalarProperty Name="idEditSource" ColumnName="idEditSource" />
+                <ScalarProperty Name="editSourceTableName" ColumnName="editSourceTableName" />
+                <ScalarProperty Name="timeEdit" ColumnName="timeEdit" />
+                <ScalarProperty Name="idEditor" ColumnName="idEditor" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Gender">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Gender">
+              <MappingFragment StoreEntitySet="Gender">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Role">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Role">
+              <MappingFragment StoreEntitySet="Role">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Service">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Service">
+              <MappingFragment StoreEntitySet="Service">
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="cost" ColumnName="cost" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subscription">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.Subscription">
+              <MappingFragment StoreEntitySet="Subscription">
+                <ScalarProperty Name="numberOfLessons" ColumnName="numberOfLessons" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="cost" ColumnName="cost" />
+                <ScalarProperty Name="idService" ColumnName="idService" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="Lapshin_3IPS919VB_FitnessClubModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="genderCode" ColumnName="genderCode" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="phone" ColumnName="phone" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="patronymic" ColumnName="patronymic" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="login" ColumnName="login" />
+                <ScalarProperty Name="idRole" ColumnName="idRole" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -1,4 +1,5 @@
-﻿using Lapshin_FitnessClub.Pages;
+﻿using Lapshin_FitnessClub.ClassHelper;
+using Lapshin_FitnessClub.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;

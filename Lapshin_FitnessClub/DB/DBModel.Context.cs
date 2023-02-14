@@ -30,6 +30,7 @@ namespace Lapshin_FitnessClub.DB
         public virtual DbSet<ClientService> ClientService { get; set; }
         public virtual DbSet<ClientSubscription> ClientSubscription { get; set; }
         public virtual DbSet<EditHistory> EditHistory { get; set; }
+        public virtual DbSet<Gender> Gender { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Service> Service { get; set; }
         public virtual DbSet<Subscription> Subscription { get; set; }

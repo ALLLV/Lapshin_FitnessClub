@@ -122,6 +122,9 @@
     <Compile Include="DB\EditHistory.cs">
       <DependentUpon>DBModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DB\Gender.cs">
+      <DependentUpon>DBModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DB\Role.cs">
       <DependentUpon>DBModel.tt</DependentUpon>
     </Compile>

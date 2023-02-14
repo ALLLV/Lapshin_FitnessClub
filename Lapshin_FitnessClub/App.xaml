@@ -19,6 +19,14 @@
             <Setter Property="FontFamily" Value="Vrinda"/>
         </Style>
 
+        <Style TargetType="DatePicker">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="240"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+
         <Style TargetType="PasswordBox">
             <Setter Property="Height" Value="26"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -35,6 +43,15 @@
             <Setter Property="FontSize"  Value="22"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Vrinda"/>
         </Style>
     </Application.Resources>
 </Application>

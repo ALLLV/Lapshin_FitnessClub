@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lapshin_FitnessClub.ClassHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,26 @@ namespace Lapshin_FitnessClub.Pages
         {
             
             NavigationService.Navigate(ClassHelper.PageMaster.registration);
+        }
+
+        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        {
+            ConnectionClass cc = new ConnectionClass();
+            
+            if (!String.IsNullOrWhiteSpace(TbxFirstName.Text)
+                && !String.IsNullOrWhiteSpace(TbxLastName.Text))
+            {
+                cc.newUser.firstName = TbxFirstName.Text;
+                cc.newUser.lastName = TbxLastName.Text;
+                if(!String.IsNullOrWhiteSpace(TbxPatronymic.Text))
+                {
+                    cc.newUser.patronymic = TbxPatronymic.Text;
+                }
+                cc.newUser.phone = TbxPhone.Text;
+                cc.newUser.birthday = DpBirthday.SelectedDate.Value;
+
+                //cc.newUser.Gender.id
+            }
         }
     }
 }
